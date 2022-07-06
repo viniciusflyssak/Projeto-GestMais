@@ -1,0 +1,25 @@
+object FrmDataModule: TFrmDataModule
+  Left = 0
+  Top = 0
+  ClientHeight = 143
+  ClientWidth = 120
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object dm: TFDConnection
+    Params.Strings = (
+      'Database=GestMais'
+      'User_Name=postgres'
+      'Password=9981'
+      'Server=localhost'
+      'DriverID=PG')
+    Left = 32
+    Top = 40
+  end
+end

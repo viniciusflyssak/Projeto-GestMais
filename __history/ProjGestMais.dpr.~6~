@@ -1,0 +1,19 @@
+program ProjGestMais;
+
+
+
+uses
+  Vcl.Forms,
+  uFrmMenuPrincipal in 'uFrmMenuPrincipal.pas' {FrmMenuPrincipal},
+  uFrmPesquisa in 'uFrmPesquisa.pas' {FrmPesquisa},
+  uDM in 'uDM.pas' {FrmDataModule},
+  uFrmCadastroProfessor in 'uFrmCadastroProfessor.pas' {FrmCadastroProfessor};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TFrmMenuPrincipal, FrmMenuPrincipal);
+  Application.Run;
+end.

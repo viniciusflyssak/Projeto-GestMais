@@ -1,0 +1,66 @@
+unit uFrmCadastroProfessor;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Buttons,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, uDM;
+
+type
+  TFrmCadastroProfessor = class(TForm)
+    pnlFundo: TPanel;
+    pnlTitulo: TPanel;
+    lblNome: TLabel;
+    llbCPF: TLabel;
+    lblDataNascimento: TLabel;
+    lblDisciplina: TLabel;
+    lblSexo: TLabel;
+    lblEmail: TLabel;
+    edtNome: TEdit;
+    edtCPF: TEdit;
+    edtNascimento: TEdit;
+    edtEmail: TEdit;
+    edtDisciplina: TEdit;
+    cbbSexo: TComboBox;
+    pnlBotoes: TPanel;
+    btnSalvar: TSpeedButton;
+    btnCancelar: TSpeedButton;
+    procedure btnSalvarClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmCadastroProfessor: TFrmCadastroProfessor;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFrmCadastroProfessor.btnSalvarClick(Sender: TObject);
+var
+  qrySalvar: TFDQuery;
+begin
+  qrySalvar := TFDQuery.Create(nil);
+  try
+    qrySalvar.Connection := DM.Connection;
+    qrySalvar.Sql.Add(' INSERT INTO PROFESSORES(NOME, CPF, SEXO, DATA_NASCIMENTO, EMAIL, DISCIPLINA) VALUES ');
+    qrySalvar.Sql.Add(' (:pNome, :pCpf, :pSexo, :pDataNasc, :pEmail, :pDisciplina) ');
+    qrySalvar.Params.ParamByName('pNome').Value :=
+    qrySalvar.Params.ParamByName('pCpf').Value :=
+    qrySalvar.Params.ParamByName('pSexo').Value :=
+    qrySalvar.Params.ParamByName('pDataNasc').Value :=
+    qrySalvar.Params.ParamByName('pEmail').Value :=
+    qrySalvar.Params.ParamByName('pDisciplina').Value :=
+  finally
+    FreeAndNil(qrySalvar);
+  end;
+end;
+
+end.

@@ -1,0 +1,42 @@
+unit uFrmLogin;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.StdCtrls,
+  uFrmPrincipal, FireDAC.Comp.Client, Vcl.Imaging.pngimage,
+  Vcl.ExtCtrls;
+
+type
+  TFrmLogin = class(TForm)
+    pnlFundo: TPanel;
+    btnCancelar: TSpeedButton;
+    btnLogar: TSpeedButton;
+    lblSenha: TLabel;
+    lblUsuario: TLabel;
+    pnlTitulo: TPanel;
+    edtUsuario: TEdit;
+    edtSenha: TEdit;
+    procedure btnCancelarClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmLogin: TFrmLogin;
+
+implementation
+
+{$R *.dfm}
+
+procedure TFrmLogin.btnCancelarClick(Sender: TObject);
+// Fecha o formulário
+begin
+  Close;
+end;
+
+end.

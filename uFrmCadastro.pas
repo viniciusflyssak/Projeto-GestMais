@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Buttons,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
-  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet,
+  FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, uFrmCadastroNotas,
   FireDAC.Comp.Client, uDM;
 
 type
@@ -29,9 +29,11 @@ type
     pnlBotoes: TPanel;
     btnSalvar: TSpeedButton;
     btnCancelar: TSpeedButton;
+    btnCadastroNotas: TSpeedButton;
     procedure btnSalvarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnCancelarClick(Sender: TObject);
+    procedure btnCadastroNotasClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -45,6 +47,22 @@ var
 implementation
 
 {$R *.dfm}
+
+uses uFrmPesquisa;
+
+procedure TFrmCadastro.btnCadastroNotasClick(Sender: TObject);
+var
+  frmPesquisaNotas: TFrmPesquisa;
+begin
+  frmPesquisaNotas := TFrmPesquisa.Create(Self);
+  try
+    frmPesquisaNotas.ID := ID;
+    frmPesquisaNotas.Tipo := 3;
+    frmPesquisaNotas.ShowModal;
+  finally
+    FreeAndNil(frmPesquisaNotas);
+  end;
+end;
 
 procedure TFrmCadastro.btnCancelarClick(Sender: TObject);
 begin
@@ -140,6 +158,8 @@ begin
     begin
       pnlTitulo.Caption := 'Cadastro de Professor';
       lblDisciplinaSerie.Caption := 'Disciplina';
+      if ID > 0 then
+        BtnCadastroNotas.Visible := true;
     end;
     2:
     begin

@@ -24,8 +24,6 @@ object FrmPesquisa: TFrmPesquisa
     Height = 268
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 635
-    ExplicitHeight = 258
     object grdPesquisa: TDBGrid
       Left = 1
       Top = 1
@@ -55,8 +53,6 @@ object FrmPesquisa: TFrmPesquisa
     Height = 41
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = 258
-    ExplicitWidth = 635
     object btnVoltar: TSpeedButton
       Left = 1
       Top = 1

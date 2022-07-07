@@ -4,7 +4,7 @@ object FrmCadastro: TFrmCadastro
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'GestMais - Cadastro'
-  ClientHeight = 307
+  ClientHeight = 324
   ClientWidth = 645
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,11 +21,9 @@ object FrmCadastro: TFrmCadastro
     Left = 0
     Top = 0
     Width = 645
-    Height = 266
+    Height = 283
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 635
-    ExplicitHeight = 299
     object lblNome: TLabel
       Left = 24
       Top = 96
@@ -104,6 +102,21 @@ object FrmCadastro: TFrmCadastro
       Font.Style = [fsBold]
       ParentFont = False
     end
+    object btnCadastroNotas: TSpeedButton
+      Left = 24
+      Top = 250
+      Width = 113
+      Height = 30
+      Caption = 'Cadastrar Notas'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Visible = False
+      OnClick = btnCadastroNotasClick
+    end
     object pnlTitulo: TPanel
       Left = 1
       Top = 1
@@ -125,7 +138,7 @@ object FrmCadastro: TFrmCadastro
       Left = 70
       Top = 96
       Width = 523
-      Height = 20
+      Height = 24
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -138,7 +151,7 @@ object FrmCadastro: TFrmCadastro
       Left = 70
       Top = 121
       Width = 523
-      Height = 21
+      Height = 24
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -151,7 +164,7 @@ object FrmCadastro: TFrmCadastro
       Left = 157
       Top = 172
       Width = 436
-      Height = 21
+      Height = 24
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -164,7 +177,7 @@ object FrmCadastro: TFrmCadastro
       Left = 74
       Top = 199
       Width = 519
-      Height = 21
+      Height = 24
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -177,7 +190,7 @@ object FrmCadastro: TFrmCadastro
       Left = 96
       Top = 225
       Width = 497
-      Height = 21
+      Height = 24
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -207,14 +220,11 @@ object FrmCadastro: TFrmCadastro
   end
   object pnlBotoes: TPanel
     Left = 0
-    Top = 266
+    Top = 283
     Width = 645
     Height = 41
     Align = alBottom
     TabOrder = 1
-    ExplicitLeft = 1
-    ExplicitTop = 409
-    ExplicitWidth = 643
     object btnSalvar: TSpeedButton
       Left = 563
       Top = 1

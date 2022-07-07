@@ -7,7 +7,8 @@ uses
   uFrmMenuPrincipal in 'uFrmMenuPrincipal.pas' {FrmMenuPrincipal},
   uFrmPesquisa in 'uFrmPesquisa.pas' {FrmPesquisa},
   uFrmCadastro in 'uFrmCadastro.pas' {FrmCadastro},
-  uDM in 'uDM.pas' {DM: TDataModule};
+  uDM in 'uDM.pas' {DM: TDataModule},
+  uFrmCadastroNotas in 'uFrmCadastroNotas.pas';
 
 {$R *.res}
 

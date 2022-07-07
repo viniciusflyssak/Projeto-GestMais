@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Buttons, uFrmPesquisa;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Buttons;
 
 type
   TFrmMenuPrincipal = class(TForm)
@@ -25,6 +25,8 @@ var
 implementation
 
 {$R *.dfm}
+
+uses uFrmPesquisa;
 
 procedure TFrmMenuPrincipal.btnCadastroClick(Sender: TObject);
 var

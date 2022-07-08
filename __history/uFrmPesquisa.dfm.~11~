@@ -44,6 +44,7 @@ object FrmPesquisa: TFrmPesquisa
       TitleFont.Height = -16
       TitleFont.Name = 'Arial'
       TitleFont.Style = [fsBold]
+      OnCellClick = grdPesquisaCellClick
       OnDblClick = grdPesquisaDblClick
     end
   end
@@ -123,7 +124,7 @@ object FrmPesquisa: TFrmPesquisa
       ExplicitLeft = -5
       ExplicitTop = 5
     end
-    object BtnCalcularMedia: TSpeedButton
+    object btnCalcularMedia: TSpeedButton
       Left = 352
       Top = 1
       Width = 73
@@ -137,12 +138,14 @@ object FrmPesquisa: TFrmPesquisa
       Font.Style = [fsBold]
       ParentFont = False
       Visible = False
-      OnClick = BtnCalcularMediaClick
+      OnClick = btnCalcularMediaClick
       ExplicitLeft = -5
       ExplicitTop = 5
     end
   end
   object qryPesquisa: TFDQuery
+    AfterOpen = qryPesquisaAfterRefreshOrOpen
+    AfterRefresh = qryPesquisaAfterRefreshOrOpen
     Left = 608
     Top = 8
   end

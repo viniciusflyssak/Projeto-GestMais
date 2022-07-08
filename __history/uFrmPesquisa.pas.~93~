@@ -8,7 +8,7 @@ uses
   Vcl.Grids, Vcl.DBGrids, Data.Win.ADODB, uDM, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.StdCtrls, FireDAC.Stan.ExprFuncs;
 
 type
   TFrmPesquisa = class(TForm)
@@ -22,6 +22,9 @@ type
     qryPesquisa: TFDQuery;
     dtsPesquisa: TDataSource;
     btnCalcularMedia: TSpeedButton;
+    pnlBusca: TPanel;
+    edtBusca: TEdit;
+    lblBusca: TLabel;
     procedure FormShow(Sender: TObject);
     procedure btnVoltarClick(Sender: TObject);
     procedure btnDeletarClick(Sender: TObject);
@@ -29,7 +32,8 @@ type
     procedure btnCalcularMediaClick(Sender: TObject);
     procedure grdPesquisaDblClick(Sender: TObject);
     procedure grdPesquisaCellClick(Column: TColumn);
-    procedure qryPesquisaAfterRefresh(DataSet: TDataSet);
+    procedure qryPesquisaAfterRefreshOrOpen(DataSet: TDataSet);
+    procedure edtBuscaKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FTipo: integer; // 1 = Professor, 2 = Aluno, 3 = Notas
     FID: integer;
@@ -54,10 +58,10 @@ var
   calculoMaior: TCalculoMaior;
   nota1, nota2, nota3, nota4: Double;
 begin
-  nota1 := qryPesquisa.FieldByName('NOTA1').AsFloat;
-  nota2 := qryPesquisa.FieldByName('NOTA2').AsFloat;
-  nota3 := qryPesquisa.FieldByName('NOTA3').AsFloat;
-  nota4 := qryPesquisa.FieldByName('NOTA4').AsFloat;
+  nota1 := qryPesquisa.FieldByName('NOTA_1').AsFloat;
+  nota2 := qryPesquisa.FieldByName('NOTA_2').AsFloat;
+  nota3 := qryPesquisa.FieldByName('NOTA_3').AsFloat;
+  nota4 := qryPesquisa.FieldByName('NOTA_4').AsFloat;
   calculoMedia := TCalculoMedia.Create;
   calculoMenor := TCalculoMenor.Create;
   calculoMaior := TCalculoMaior.Create;
@@ -89,7 +93,7 @@ begin
       2: qryDeletar.Sql.Add(cDeletaAluno);
       3: qryDeletar.Sql.Add(cDeletaAlunoProfessor);
     end;
-    qryDeletar.Params.ParamByName('pId').Value := qryPesquisa.FieldByName('Código').AsInteger;
+    qryDeletar.Params.ParamByName('pId').Value := qryPesquisa.FieldByName('ID').AsInteger;
     qryDeletar.ExecSQL;
   finally
     FreeAndNil(qryDeletar);
@@ -109,7 +113,7 @@ begin
       if (Sender as TSpeedButton).tag = 1 then
         frmCadastro.ID := 0
       else
-        frmCadastro.ID := qryPesquisa.FieldByName('Código').AsInteger;
+        frmCadastro.ID := qryPesquisa.FieldByName('ID').AsInteger;
       frmCadastro.Tipo := FTipo;
       frmCadastro.ShowModal;
       qryPesquisa.Refresh;
@@ -125,7 +129,7 @@ begin
       if (Sender as TSpeedButton).tag = 1 then
         frmCadastroNota.IdRegistro := 0
       else
-        frmCadastroNota.IdRegistro := qryPesquisa.FieldByName('Código').AsInteger;
+        frmCadastroNota.IdRegistro := qryPesquisa.FieldByName('ID').AsInteger;
       frmCadastroNota.ShowModal;
       qryPesquisa.Refresh;
     finally
@@ -139,13 +143,64 @@ begin
   Close;
 end;
 
+procedure TFrmPesquisa.edtBuscaKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+Const
+  cSqlBuscaProfessorPorAluno = ' SELECT ID_PROFESSOR FROM ALUNOS_PROFESSOR  ' +
+                               ' INNER JOIN  ALUNOS ON ALUNOS.ID_ALUNO = ALUNOS_PROFESSOR.ID_ALUNO ' +
+                               ' WHERE UPPER(ALUNOS.NOME) LIKE ''%ALU%''';//:pNome ';
+var
+  filtroprofessor: String;                               
+  function montaFiltroProfessor: String;
+  var
+    qryBuscaProfessorAluno: TFDQuery;
+  begin
+    Result := '';
+    qryBuscaProfessorAluno := TFDQuery.Create(nil);
+    try
+      qryBuscaProfessorAluno.Connection := DM.Connection;
+      qryBuscaProfessorAluno.Sql.Add(cSqlBuscaProfessorPorAluno);
+     // qryBuscaProfessorAluno.Params.ParamByName('pNome').Value := QuotedStr('%' + UpperCase(edtBusca.Text) + '%'); 
+      qryBuscaProfessorAluno.Open;
+      qryBuscaProfessorAluno.First;
+      if qryBuscaProfessorAluno.RecordCount > 0 then
+      begin
+        while not(qryBuscaProfessorAluno.Eof) do
+        begin
+          Result := Result + ' OR (Codigo = ' + qryBuscaProfessorAluno.FieldByName('ID_PROFESSOR').AsString + ')';
+          qryBuscaProfessorAluno.Next;
+        end;
+      end;
+    finally
+      FreeAndNil(qryBuscaProfessorAluno);
+    end;
+  end;
+begin
+  filtroProfessor := '';
+  if length(edtBusca.Text) > 2 then
+  begin
+    if FTipo = 1 then
+      filtroprofessor := montaFiltroProfessor;
+    qryPesquisa.Filtered := false;
+    qryPesquisa.Filter := 'UPPER(NOME) LIKE ''%' +  UpperCase(edtBusca.Text) + '%''';
+    if (FTipo = 1) and not(filtroProfessor = '') then
+      qryPesquisa.Filter := '(' + qryPesquisa.Filter + ')' + filtroProfessor;
+    qryPesquisa.Filtered := true;  
+  end;
+  if edtBusca.Text = '' then
+  begin
+    qryPesquisa.Filtered := false;
+    qryPesquisa.Filter := '';
+  end;
+end;
+
 procedure TFrmPesquisa.FormShow(Sender: TObject);
 Const
-  cSqlProfessores = ' SELECT ID_PROFESSOR AS Código, NOME ' +
+  cSqlProfessores = ' SELECT ID_PROFESSOR AS ID, NOME ' +
                     ' FROM PROFESSORES ';
-  cSqlAlunos = ' SELECT ID_ALUNO AS Código, NOME ' +
+  cSqlAlunos = ' SELECT ID_ALUNO AS ID, NOME ' +
                ' FROM ALUNOS ';
-  cSqlNotas = ' SELECT AP.ID_ALUNOS_PROFESSOR AS Código, AL.ID_ALUNO AS ALUNO, AL.NOME AS NOME, AP.ANO, ' +
+  cSqlNotas = ' SELECT AP.ID_ALUNOS_PROFESSOR AS ID, AL.ID_ALUNO AS ALUNO, AL.NOME AS NOME, AP.ANO, ' +
               ' AP.NOTA1 AS NOTA_1, AP.NOTA2 AS NOTA_2, AP.NOTA3 AS NOTA_3, AP.NOTA4 AS NOTA_4 ' +
               ' FROM ALUNOS_PROFESSOR AP ' +
               ' INNER JOIN ALUNOS AL ON AL.ID_ALUNO = AP.ID_ALUNO ' +
@@ -189,7 +244,7 @@ begin
   btnEditarNovoClick(btnEditar);
 end;
 
-procedure TFrmPesquisa.qryPesquisaAfterRefresh(DataSet: TDataSet);
+procedure TFrmPesquisa.qryPesquisaAfterRefreshOrOpen(DataSet: TDataSet);
 begin
   if qryPesquisa.RecordCount > 0 then
   begin

@@ -26,9 +26,9 @@ object FrmPesquisa: TFrmPesquisa
     TabOrder = 0
     object grdPesquisa: TDBGrid
       Left = 1
-      Top = 1
+      Top = 42
       Width = 643
-      Height = 266
+      Height = 225
       Align = alClient
       DataSource = dtsPesquisa
       Font.Charset = ANSI_CHARSET
@@ -46,6 +46,41 @@ object FrmPesquisa: TFrmPesquisa
       TitleFont.Style = [fsBold]
       OnCellClick = grdPesquisaCellClick
       OnDblClick = grdPesquisaDblClick
+    end
+    object pnlBusca: TPanel
+      Left = 1
+      Top = 1
+      Width = 643
+      Height = 41
+      Align = alTop
+      TabOrder = 1
+      object lblBusca: TLabel
+        Left = 11
+        Top = 9
+        Width = 47
+        Height = 16
+        Caption = 'Buscar:'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object edtBusca: TEdit
+        Left = 64
+        Top = 9
+        Width = 561
+        Height = 24
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        TabOrder = 0
+        OnKeyUp = edtBuscaKeyUp
+      end
     end
   end
   object pnlBotoes: TPanel

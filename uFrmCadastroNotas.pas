@@ -34,10 +34,13 @@ type
     procedure btnSalvarClick(Sender: TObject);
     procedure btnCancelarClick(Sender: TObject);
     procedure edtCodAlunoExit(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
-    { Private declarations }
-  public
-    IdProfessor: integer;
+    FIdProfessor: integer;
+    FIdRegistro: integer;
+  published
+    property IdProfessor: integer read FIdProfessor write FIdProfessor;
+    property IdRegistro: integer read FIdRegistro write FIdRegistro;
   end;
 
 var
@@ -54,22 +57,40 @@ end;
 
 procedure TFrmCadastroNotas.btnSalvarClick(Sender: TObject);
 Const
-  cSqlInsert = ' INSERT INTO ALUNOS_PROFESSOR(ANO, ID_ALUNO, ID_PROFESSOR, NOTA1, NOTA2, NOTA3, NOTA4) ' +
+  cSqlInsertNotas = ' INSERT INTO ALUNOS_PROFESSOR(ANO, ID_ALUNO, ID_PROFESSOR, NOTA1, NOTA2, NOTA3, NOTA4) ' +
                ' VALUES (:pAno, :pIdAluno, :pIdProfessor, :pNota1, :pNota2, :pNota3, :pNota4) ';
-Var
+  cSqlUpdateNotas = ' UPDATE ALUNOS_PROFESSOR SET ANO = :pAno, ID_ALUNO = :pIdAluno, ID_PROFESSOR = :pIdProfessor, ' +
+                    ' NOTA1 = :pNota1, NOTA2 = :pNota2, NOTA3 = :pNota3, NOTA4 = :pNota4 ' +
+                    ' WHERE ID_ALUNOS_PROFESSOR = :pId';
+var
   qryCadastro: TFDQuery;
 begin
+  if edtCodAluno.Text = '' then
+  begin
+    raise Exception.Create('Necessário informar o aluno!');
+    edtCodAluno.SetFocus;
+  end;
+  if edtAno.Text = '' then
+  begin
+    raise Exception.Create('Necessário informar o ano!');
+    edtAno.SetFocus;
+  end;
   qryCadastro := TFDQuery.Create(nil);
   try
     qryCadastro.Connection := DM.Connection;
-    qryCadastro.Sql.Add(cSqlInsert);
+    if FIdRegistro > 0 then
+      qryCadastro.Sql.Add(cSqlUpdateNotas)
+    else
+      qryCadastro.Sql.Add(cSqlInsertNotas);
     qryCadastro.Params.ParamByName('pAno').Value := StrToInt(edtAno.Text);
     qryCadastro.Params.ParamByName('pIdAluno').Value := StrToInt(edtCodAluno.Text);
-    qryCadastro.Params.ParamByName('pIdProfessor').Value := IdProfessor;
-    qryCadastro.Params.ParamByName('pNota1').Value := StrToFloat(edtNota1.Text);
-    qryCadastro.Params.ParamByName('pNota2').Value := StrToFloat(edtNota2.Text);
-    qryCadastro.Params.ParamByName('pNota3').Value := StrToFloat(edtNota3.Text);
-    qryCadastro.Params.ParamByName('pNota4').Value := StrToFloat(edtNota4.Text);
+    qryCadastro.Params.ParamByName('pIdProfessor').Value := FIdProfessor;
+    qryCadastro.Params.ParamByName('pNota1').Value := StrToFloatDef(edtNota1.Text, 0);
+    qryCadastro.Params.ParamByName('pNota2').Value := StrToFloatDef(edtNota2.Text, 0);
+    qryCadastro.Params.ParamByName('pNota3').Value := StrToFloatDef(edtNota3.Text, 0);
+    qryCadastro.Params.ParamByName('pNota4').Value := StrToFloatDef(edtNota4.Text, 0);
+    if FIdRegistro > 0 then
+      qryCadastro.Params.ParamByName('pId').Value := FIdRegistro;
     qryCadastro.ExecSQL;
   finally
     FreeAndNil(qryCadastro);
@@ -105,6 +126,35 @@ begin
     end;
   finally
     FreeAndNil(qryValidaAluno);
+  end;
+end;
+
+procedure TFrmCadastroNotas.FormShow(Sender: TObject);
+Const
+  cCarregaDados = ' SELECT ID_ALUNO, ANO, NOTA1, NOTA2, NOTA3, NOTA4 ' +
+                  ' FROM ALUNOS_PROFESSOR ' +
+                  ' WHERE ID_ALUNOS_PROFESSOR = :pId ';
+var
+  qryCarregaRegistro: TFDQuery;
+begin
+  if FIdRegistro > 0 then
+  begin
+    qryCarregaRegistro := TFDQuery.Create(nil);
+    try
+      qryCarregaRegistro.Connection := DM.Connection;
+      qryCarregaRegistro.Sql.Add(cCarregaDados);
+      qryCarregaRegistro.Params.ParamByName('pID').Value := FIdRegistro;
+      qryCarregaRegistro.Open;      
+      edtCodAluno.Text := qryCarregaRegistro.FieldByName('ID_ALUNO').AsString;
+      edtAno.Text := qryCarregaRegistro.FieldByName('ANO').AsString;
+      edtNota1.Text := qryCarregaRegistro.FieldByName('NOTA1').AsString;
+      edtNota2.Text := qryCarregaRegistro.FieldByName('NOTA2').AsString;
+      edtNota3.Text := qryCarregaRegistro.FieldByName('NOTA3').AsString;
+      edtNota4.Text := qryCarregaRegistro.FieldByName('NOTA4').AsString;
+      edtCodAlunoExit(nil);
+    finally
+      FreeAndNil(qryCarregaRegistro);
+    end;
   end;
 end;
 

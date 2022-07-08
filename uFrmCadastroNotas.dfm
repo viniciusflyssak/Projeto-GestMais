@@ -14,6 +14,7 @@ object FrmCadastroNotas: TFrmCadastroNotas
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pnlTitulo: TPanel
@@ -40,7 +41,6 @@ object FrmCadastroNotas: TFrmCadastroNotas
     Height = 41
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = 266
     object btnSalvar: TSpeedButton
       Left = 563
       Top = 1
@@ -84,7 +84,6 @@ object FrmCadastroNotas: TFrmCadastroNotas
     Align = alClient
     Caption = '`'
     TabOrder = 2
-    ExplicitHeight = 202
     object lblAluno: TLabel
       Left = 24
       Top = 10
@@ -289,6 +288,7 @@ object FrmCadastroNotas: TFrmCadastroNotas
       Top = 10
       Width = 459
       Height = 24
+      TabStop = False
       Color = 16515048
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText

@@ -3,7 +3,7 @@ object FrmPesquisa: TFrmPesquisa
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = 'Pesquisa: professores'
+  Caption = 'Pesquisa'
   ClientHeight = 309
   ClientWidth = 645
   Color = clBtnFace
@@ -44,6 +44,7 @@ object FrmPesquisa: TFrmPesquisa
       TitleFont.Height = -16
       TitleFont.Name = 'Arial'
       TitleFont.Style = [fsBold]
+      OnDblClick = grdPesquisaDblClick
     end
   end
   object pnlBotoes: TPanel

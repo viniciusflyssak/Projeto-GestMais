@@ -27,10 +27,13 @@ type
     procedure btnDeletarClick(Sender: TObject);
     procedure btnEditarNovoClick(Sender: TObject);
     procedure BtnCalcularMediaClick(Sender: TObject);
+    procedure grdPesquisaDblClick(Sender: TObject);
   private
-  public
-    Tipo: integer; // 1 = Professor, 2 = Aluno, 3 = Notas
-    ID: integer;
+    FTipo: integer; // 1 = Professor, 2 = Aluno, 3 = Notas
+    FID: integer;
+  published
+    property Tipo: integer read FTipo write FTipo;
+    property ID: integer read FID write FID;
   end;
 
 var
@@ -57,7 +60,7 @@ begin
   calculoMenor := TCalculoMenor.Create;
   calculoMaior := TCalculoMaior.Create;
   try
-    ShowMessage('Média: ' + FloatToStr(calculoMedia.Calcular(nota1, nota2, nota3, nota4)) + #10#13 +
+    ShowMessage('Média: ' + FormatFloat('0.0', calculoMedia.Calcular(nota1, nota2, nota3, nota4)) + #10#13 +
                 'Menor nota: ' + FloatToStr(calculoMenor.Calcular(nota1, nota2, nota3, nota4)) + #10#13 +
                 'Maior nota: ' + FloatToStr(calculoMaior.Calcular(nota1, nota2, nota3, nota4)));
   finally
@@ -79,7 +82,7 @@ begin
   qryDeletar := TFDQuery.Create(nil);
   try
     qryDeletar.Connection := dm.Connection;
-    case Tipo of
+    case FTipo of
       1: qryDeletar.Sql.Add(cDeletaProfessor);   
       2: qryDeletar.Sql.Add(cDeletaAluno);
       3: qryDeletar.Sql.Add(cDeletaAlunoProfessor);
@@ -97,7 +100,7 @@ var
   frmCadastro: TFrmCadastro;
   frmCadastroNota: TFrmCadastroNotas;
 begin
-  if not(Tipo = 3) then
+  if not(FTipo = 3) then
   begin
     frmCadastro:= TFrmCadastro.Create(Self);
     try
@@ -105,7 +108,7 @@ begin
         frmCadastro.ID := 0
       else
         frmCadastro.ID := qryPesquisa.FieldByName('Código').AsInteger;
-      frmCadastro.Tipo := Tipo;
+      frmCadastro.Tipo := FTipo;
       frmCadastro.ShowModal;
       qryPesquisa.Refresh;
     finally
@@ -116,7 +119,11 @@ begin
   begin
     frmCadastroNota := TFrmCadastroNotas.Create(Self);
     try
-      frmCadastroNota.IdProfessor := id;
+      frmCadastroNota.IdProfessor := FID;
+      if (Sender as TSpeedButton).tag = 1 then
+        frmCadastroNota.IdRegistro := 0
+      else
+        frmCadastroNota.IdRegistro := qryPesquisa.FieldByName('Código').AsInteger;
       frmCadastroNota.ShowModal;
       qryPesquisa.Refresh;
     finally
@@ -132,14 +139,17 @@ end;
 
 procedure TFrmPesquisa.FormShow(Sender: TObject);
 Const
-  cSqlProfessores = ' SELECT ID_PROFESSOR AS Código, NOME FROM PROFESSORES ';
-  cSqlAlunos = ' SELECT ID_ALUNO AS Código, NOME FROM ALUNOS ';
-  cSqlNotas = ' SELECT AP.ID_ALUNOS_PROFESSOR AS Código, AL.ID_ALUNO, AL.NOME AS NOME, AP.ANO, AP.NOTA1, AP.NOTA2, AP.NOTA3, AP.NOTA4 ' +
+  cSqlProfessores = ' SELECT ID_PROFESSOR AS Código, NOME ' +
+                    ' FROM PROFESSORES ';
+  cSqlAlunos = ' SELECT ID_ALUNO AS Código, NOME ' +
+               ' FROM ALUNOS ';
+  cSqlNotas = ' SELECT AP.ID_ALUNOS_PROFESSOR AS Código, AL.ID_ALUNO AS ALUNO, AL.NOME AS NOME, AP.ANO, ' +
+              ' AP.NOTA1 AS NOTA_1, AP.NOTA2 AS NOTA_2, AP.NOTA3 AS NOTA_3, AP.NOTA4 AS NOTA_4 ' +
               ' FROM ALUNOS_PROFESSOR AP ' +
               ' INNER JOIN ALUNOS AL ON AL.ID_ALUNO = AP.ID_ALUNO ' +
               ' WHERE AP.ID_PROFESSOR = :pId ';
 begin
-  case Tipo of
+  case FTipo of
     1: FrmPesquisa.Caption := 'Pesquisa: Professores';
     2: FrmPesquisa.Caption := 'Pesquisa: Alunos';
     3:
@@ -150,21 +160,26 @@ begin
   end;
   try
     qryPesquisa.Connection := DM.Connection;
-    case Tipo of
+    case FTipo of
       1: qryPesquisa.Sql.Add(cSqlProfessores);
       2: qryPesquisa.Sql.Add(cSqlAlunos);
       3:
       begin
         qryPesquisa.Sql.Add(cSqlNotas);
-        qryPesquisa.Params.ParamByName('pId').Value := ID;
+        qryPesquisa.Params.ParamByName('pId').Value := FID;
       end;
     end;
     qryPesquisa.Open;
-    if not(Tipo = 3) then
+    if not(FTipo = 3) then
       ShowScrollBar(grdPesquisa.Handle,SB_HORZ,False);
   except
     raise exception.Create('Erro ao carregar os registros!');
   end;
+end;
+
+procedure TFrmPesquisa.grdPesquisaDblClick(Sender: TObject);
+begin
+  btnEditarNovoClick(btnEditar);
 end;
 
 end.

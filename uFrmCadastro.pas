@@ -8,7 +8,7 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, Data.DB, FireDAC.Comp.DataSet, uFrmCadastroNotas,
-  FireDAC.Comp.Client, uDM;
+  FireDAC.Comp.Client, uDM, Vcl.Mask, Vcl.ComCtrls;
 
 type
   TFrmCadastro = class(TForm)
@@ -21,8 +21,6 @@ type
     lblSexo: TLabel;
     lblEmail: TLabel;
     edtNome: TEdit;
-    edtCPF: TEdit;
-    edtNascimento: TEdit;
     edtEmail: TEdit;
     edtDisciplinaSerie: TEdit;
     cbbSexo: TComboBox;
@@ -30,15 +28,18 @@ type
     btnSalvar: TSpeedButton;
     btnCancelar: TSpeedButton;
     btnCadastroNotas: TSpeedButton;
+    edtCpf: TMaskEdit;
+    dtpDataNasc: TDateTimePicker;
     procedure btnSalvarClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnCancelarClick(Sender: TObject);
     procedure btnCadastroNotasClick(Sender: TObject);
   private
-    { Private declarations }
-  public
-    Tipo: integer;
-    ID: integer;
+    FTipo: integer;
+    FID: integer;
+  published
+    property ID: integer read FID write FID;
+    property Tipo: integer read FTipo write FTipo;
   end;
 
 var
@@ -56,7 +57,7 @@ var
 begin
   frmPesquisaNotas := TFrmPesquisa.Create(Self);
   try
-    frmPesquisaNotas.ID := ID;
+    frmPesquisaNotas.ID := FID;
     frmPesquisaNotas.Tipo := 3;
     frmPesquisaNotas.ShowModal;
   finally
@@ -79,34 +80,63 @@ Const
                    ' EMAIL = :pEmail, SERIE = :pDisciplinaSerie WHERE ID_ALUNO = :pId ';
 var
   qrySalvar: TFDQuery;
+  procedure validaDados;
+  begin
+    if edtNome.Text = '' then
+    begin
+      edtNome.SetFocus;
+      raise Exception.Create('Necessário informar nome!');
+    end;
+    if (edtCpf.Text = '   .   .   -  ') or (copy(edtCpf.Text, 14, 1) = ' ') then
+    begin
+      edtCpf.SetFocus;
+      raise Exception.Create('Necessário informar CPF!');
+    end;
+    if cbbSexo.ItemIndex < 0 then
+    begin
+      cbbSexo.SetFocus;
+      raise Exception.Create('Necessário selecionar Sexo!');
+    end;
+    if edtDisciplinaSerie.Text = '' then
+    begin
+      edtDisciplinaSerie.SetFocus;
+      case FTipo of
+        1: raise Exception.Create('Necessário informar Disciplina!');
+        2: raise Exception.Create('Necessário informar Série!');
+      end;
+    end;
+    if dtpDataNasc.DateTime = now then
+      raise Exception.Create('Necessário informar data de nascimento válida!');
+  end;
 begin
+  validaDados;
   qrySalvar := TFDQuery.Create(nil);
   try
     qrySalvar.Connection := DM.Connection;
-    if ID > 0 then
+    if FID > 0 then
     begin
-      case Tipo of
+      case FTipo of
         1: qrySalvar.Sql.Add(cAtualizaProfessor);
         2: qrySalvar.Sql.Add(cAtualizaAluno);
       end;
     end
     else
     begin
-      case Tipo of
+      case FTipo of
         1: qrySalvar.Sql.Add(cInsereProfessor);
         2: qrySalvar.Sql.Add(cInsereAluno);
       end;
     end;
-    if not(ID > 0) then
+    if not(FID > 0) then
       qrySalvar.Sql.Add(' (:pNome, :pCpf, :pSexo, :pDataNasc, :pEmail, :pDisciplinaSerie) ');
     qrySalvar.Params.ParamByName('pNome').Value := edtNome.Text;
     qrySalvar.Params.ParamByName('pCpf').Value := edtCPF.Text;
     qrySalvar.Params.ParamByName('pSexo').Value := copy(cbbSexo.Text,1,1);
-    qrySalvar.Params.ParamByName('pDataNasc').Value := StrToDate(edtNascimento.Text);
+    qrySalvar.Params.ParamByName('pDataNasc').Value := dtpDataNasc.DateTime;
     qrySalvar.Params.ParamByName('pEmail').Value := edtEmail.Text;
     qrySalvar.Params.ParamByName('pDisciplinaSerie').Value := edtDisciplinaSerie.Text;
-    if ID > 0 then
-      qrySalvar.Params.ParamByName('pId').Value := ID;
+    if FID > 0 then
+      qrySalvar.Params.ParamByName('pId').Value := FID;
     qrySalvar.ExecSQL;
     ShowMessage('Salvo com sucesso!');
   finally
@@ -117,27 +147,31 @@ end;
 
 procedure TFrmCadastro.FormShow(Sender: TObject);
 Const
-  cCarregaDadosProfessor = ' SELECT NOME, CPF, SEXO, DATA_NASCIMENTO, EMAIL, DISCIPLINA FROM PROFESSORES WHERE ID_PROFESSOR = :pId ';
-  cCarregaDadosAluno = ' SELECT NOME, CPF, SEXO, DATA_NASCIMENTO, EMAIL, SERIE FROM ALUNOS WHERE ID_ALUNO = :pId ';
+  cCarregaDadosProfessor = ' SELECT NOME, CPF, SEXO, DATA_NASCIMENTO, EMAIL, DISCIPLINA ' +
+                           ' FROM PROFESSORES ' +
+                           ' WHERE ID_PROFESSOR = :pId ';
+  cCarregaDadosAluno = ' SELECT NOME, CPF, SEXO, DATA_NASCIMENTO, EMAIL, SERIE ' +
+                       ' FROM ALUNOS ' +
+                       ' WHERE ID_ALUNO = :pId ';
 var
   qryCarregaDados: TFDQuery;
 begin
-  if id > 0 then
+  if FID > 0 then
   begin
     qryCarregaDados := TFDQuery.Create(nil);
     try
       qryCarregaDados.Connection := DM.Connection;
-      case Tipo of
+      case FTipo of
         1: qryCarregaDados.Sql.Add(cCarregaDadosProfessor);
         2: qryCarregaDados.Sql.Add(cCarregaDadosAluno);
       end;
-      qryCarregaDados.Params.ParamByName('pID').Value := ID;
+      qryCarregaDados.Params.ParamByName('pID').Value := FID;
       qryCarregaDados.Open;
       edtNome.Text := qryCarregaDados.FieldByName('NOME').AsString;
       edtCPF.Text := qryCarregaDados.FieldByName('CPF').AsString;
-      edtNascimento.Text := qryCarregaDados.FieldByName('DATA_NASCIMENTO').AsString;
+      dtpDataNasc.Date := qryCarregaDados.FieldByName('DATA_NASCIMENTO').AsDateTime;
       edtEmail.Text := qryCarregaDados.FieldByName('EMAIL').AsString;
-      case Tipo of
+      case FTipo of
         1: edtDisciplinaSerie.Text := qryCarregaDados.FieldByName('DISCIPLINA').AsString;
         2: edtDisciplinaSerie.Text := qryCarregaDados.FieldByName('SERIE').AsString;
       end;
@@ -153,18 +187,20 @@ begin
     end;
   end;
 
-  case Tipo of
+  case FTipo of
     1:
     begin
       pnlTitulo.Caption := 'Cadastro de Professor';
       lblDisciplinaSerie.Caption := 'Disciplina';
-      if ID > 0 then
+      if FID > 0 then
         BtnCadastroNotas.Visible := true;
     end;
     2:
     begin
       pnlTitulo.Caption := 'Cadastro de Aluno';
       lblDisciplinaSerie.Caption := 'Serie';
+      edtDisciplinaSerie.Left := edtEmail.Left;
+      edtDisciplinaSerie.Width := edtEmail.Width;
     end;
   end;
 end;

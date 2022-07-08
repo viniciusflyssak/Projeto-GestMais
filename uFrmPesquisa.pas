@@ -54,10 +54,10 @@ var
   calculoMaior: TCalculoMaior;
   nota1, nota2, nota3, nota4: Double;
 begin
-  nota1 := qryPesquisa.FieldByName('NOTA1').AsFloat;
-  nota2 := qryPesquisa.FieldByName('NOTA2').AsFloat;
-  nota3 := qryPesquisa.FieldByName('NOTA3').AsFloat;
-  nota4 := qryPesquisa.FieldByName('NOTA4').AsFloat;
+  nota1 := qryPesquisa.FieldByName('NOTA_1').AsFloat;
+  nota2 := qryPesquisa.FieldByName('NOTA_2').AsFloat;
+  nota3 := qryPesquisa.FieldByName('NOTA_3').AsFloat;
+  nota4 := qryPesquisa.FieldByName('NOTA_4').AsFloat;
   calculoMedia := TCalculoMedia.Create;
   calculoMenor := TCalculoMenor.Create;
   calculoMaior := TCalculoMaior.Create;

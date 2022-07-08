@@ -1,0 +1,16 @@
+unit uCalculo;
+
+interface
+
+type
+  // Criação da classe aluno e seus atributos, herdada da classe "pessoa"
+
+  TCalculo = class
+  public
+    function Calcular(Nota1, Nota2, Nota3, Nota4: Double): Double;
+      Virtual; Abstract;
+  end;
+
+implementation
+
+end.

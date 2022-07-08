@@ -1,0 +1,12 @@
+unit uCalculo;
+
+interface
+
+type
+  TCalculo = Class
+  private
+  End;
+
+implementation
+
+end.

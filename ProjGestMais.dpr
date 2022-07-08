@@ -8,7 +8,11 @@ uses
   uFrmPesquisa in 'uFrmPesquisa.pas' {FrmPesquisa},
   uFrmCadastro in 'uFrmCadastro.pas' {FrmCadastro},
   uDM in 'uDM.pas' {DM: TDataModule},
-  uFrmCadastroNotas in 'uFrmCadastroNotas.pas';
+  uFrmCadastroNotas in 'uFrmCadastroNotas.pas',
+  uCalculo in 'CLASS\uCalculo.pas',
+  uCalculoMedia in 'CLASS\uCalculoMedia.pas',
+  uCalculoMaior in 'CLASS\uCalculoMaior.pas',
+  uCalculoMenor in 'CLASS\uCalculoMenor.pas';
 
 {$R *.res}
 

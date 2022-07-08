@@ -8,7 +8,7 @@ uses
   Vcl.Grids, Vcl.DBGrids, Data.Win.ADODB, uDM, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Stan.Async, FireDAC.DApt,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, uFrmCadastro, uFrmCadastroNotas;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client;
 
 type
   TFrmPesquisa = class(TForm)
@@ -21,10 +21,12 @@ type
     btnDeletar: TSpeedButton;
     qryPesquisa: TFDQuery;
     dtsPesquisa: TDataSource;
+    BtnCalcularMedia: TSpeedButton;
     procedure FormShow(Sender: TObject);
     procedure btnVoltarClick(Sender: TObject);
     procedure btnDeletarClick(Sender: TObject);
     procedure btnEditarNovoClick(Sender: TObject);
+    procedure BtnCalcularMediaClick(Sender: TObject);
   private
   public
     Tipo: integer; // 1 = Professor, 2 = Aluno, 3 = Notas
@@ -37,6 +39,34 @@ var
 implementation
 
 {$R *.dfm}
+
+uses uFrmCadastro, uFrmCadastroNotas, uCalculoMedia, uCalculoMaior, uCalculoMenor;
+
+procedure TFrmPesquisa.BtnCalcularMediaClick(Sender: TObject);
+var
+  calculoMedia: TCalculoMedia;
+  calculoMenor: TCalculoMenor;
+  calculoMaior: TCalculoMaior;
+  nota1, nota2, nota3, nota4: Double;
+begin
+  nota1 := qryPesquisa.FieldByName('NOTA1').AsFloat;
+  nota2 := qryPesquisa.FieldByName('NOTA2').AsFloat;
+  nota3 := qryPesquisa.FieldByName('NOTA3').AsFloat;
+  nota4 := qryPesquisa.FieldByName('NOTA4').AsFloat;
+  calculoMedia := TCalculoMedia.Create;
+  calculoMenor := TCalculoMenor.Create;
+  calculoMaior := TCalculoMaior.Create;
+  try
+    ShowMessage('Média: ' + FloatToStr(calculoMedia.Calcular(nota1, nota2, nota3, nota4)) + #10#13 +
+                'Menor nota: ' + FloatToStr(calculoMenor.Calcular(nota1, nota2, nota3, nota4)) + #10#13 +
+                'Maior nota: ' + FloatToStr(calculoMaior.Calcular(nota1, nota2, nota3, nota4)));
+  finally
+    FreeAndNil(calculoMedia);
+    FreeAndNil(calculoMenor);
+    FreeAndNil(calculoMaior);
+  end;
+
+end;
 
 procedure TFrmPesquisa.btnDeletarClick(Sender: TObject);
 Const
@@ -112,7 +142,11 @@ begin
   case Tipo of
     1: FrmPesquisa.Caption := 'Pesquisa: Professores';
     2: FrmPesquisa.Caption := 'Pesquisa: Alunos';
-    3: FrmPesquisa.Caption := 'Pesquisa: Notas de alunos';
+    3:
+    begin
+      BtnCalcularMedia.Visible := true;
+      FrmPesquisa.Caption := 'Pesquisa: Notas de alunos';
+    end;
   end;
   try
     qryPesquisa.Connection := DM.Connection;

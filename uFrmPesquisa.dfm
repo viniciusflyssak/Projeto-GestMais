@@ -122,6 +122,24 @@ object FrmPesquisa: TFrmPesquisa
       ExplicitLeft = -5
       ExplicitTop = 5
     end
+    object BtnCalcularMedia: TSpeedButton
+      Left = 352
+      Top = 1
+      Width = 73
+      Height = 39
+      Align = alRight
+      Caption = 'M'#233'dia'
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Visible = False
+      OnClick = BtnCalcularMediaClick
+      ExplicitLeft = -5
+      ExplicitTop = 5
+    end
   end
   object qryPesquisa: TFDQuery
     Left = 608

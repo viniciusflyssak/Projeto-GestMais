@@ -21,13 +21,15 @@ type
     btnDeletar: TSpeedButton;
     qryPesquisa: TFDQuery;
     dtsPesquisa: TDataSource;
-    BtnCalcularMedia: TSpeedButton;
+    btnCalcularMedia: TSpeedButton;
     procedure FormShow(Sender: TObject);
     procedure btnVoltarClick(Sender: TObject);
     procedure btnDeletarClick(Sender: TObject);
     procedure btnEditarNovoClick(Sender: TObject);
-    procedure BtnCalcularMediaClick(Sender: TObject);
+    procedure btnCalcularMediaClick(Sender: TObject);
     procedure grdPesquisaDblClick(Sender: TObject);
+    procedure grdPesquisaCellClick(Column: TColumn);
+    procedure qryPesquisaAfterRefreshOrOpen(DataSet: TDataSet);
   private
     FTipo: integer; // 1 = Professor, 2 = Aluno, 3 = Notas
     FID: integer;
@@ -45,7 +47,7 @@ implementation
 
 uses uFrmCadastro, uFrmCadastroNotas, uCalculoMedia, uCalculoMaior, uCalculoMenor;
 
-procedure TFrmPesquisa.BtnCalcularMediaClick(Sender: TObject);
+procedure TFrmPesquisa.btnCalcularMediaClick(Sender: TObject);
 var
   calculoMedia: TCalculoMedia;
   calculoMenor: TCalculoMenor;
@@ -177,9 +179,31 @@ begin
   end;
 end;
 
+procedure TFrmPesquisa.grdPesquisaCellClick(Column: TColumn);
+begin
+  grdPesquisa.SelectedField := grdPesquisa.Fields[0];
+end;
+
 procedure TFrmPesquisa.grdPesquisaDblClick(Sender: TObject);
 begin
   btnEditarNovoClick(btnEditar);
+end;
+
+procedure TFrmPesquisa.qryPesquisaAfterRefreshOrOpen(DataSet: TDataSet);
+begin
+  if qryPesquisa.RecordCount > 0 then
+  begin
+    btnEditar.Visible := true;
+    btnDeletar.Visible := true;
+    if FTipo = 3 then
+      btnCalcularMedia.Visible := true;
+  end
+  else
+  begin
+    btnEditar.Visible := false;
+    btnDeletar.Visible := false;
+    btnCalcularMedia.Visible := false;
+  end;
 end;
 
 end.

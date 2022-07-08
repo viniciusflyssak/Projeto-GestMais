@@ -105,7 +105,7 @@ var
         2: raise Exception.Create('Necessário informar Série!');
       end;
     end;
-    if dtpDataNasc.DateTime = now then
+    if dtpDataNasc.Date = Date then
       raise Exception.Create('Necessário informar data de nascimento válida!');
   end;
 begin

@@ -196,14 +196,17 @@ end;
 procedure TFrmPesquisa.FormShow(Sender: TObject);
 Const
   cSqlProfessores = ' SELECT ID_PROFESSOR AS ID, NOME ' +
-                    ' FROM PROFESSORES ';
+                    ' FROM PROFESSORES ' +
+                    ' ORDER BY ID ';
   cSqlAlunos = ' SELECT ID_ALUNO AS ID, NOME ' +
-               ' FROM ALUNOS ';
+               ' FROM ALUNOS ' +
+               ' ORDER BY ID ';
   cSqlNotas = ' SELECT AP.ID_ALUNOS_PROFESSOR AS ID, AL.ID_ALUNO AS ALUNO, AL.NOME AS NOME, AP.ANO, ' +
               ' AP.NOTA1 AS NOTA_1, AP.NOTA2 AS NOTA_2, AP.NOTA3 AS NOTA_3, AP.NOTA4 AS NOTA_4 ' +
               ' FROM ALUNOS_PROFESSOR AP ' +
               ' INNER JOIN ALUNOS AL ON AL.ID_ALUNO = AP.ID_ALUNO ' +
-              ' WHERE AP.ID_PROFESSOR = :pId ';
+              ' WHERE AP.ID_PROFESSOR = :pId ' +
+              ' ORDER BY ID ';
 begin
   case FTipo of
     1: FrmPesquisa.Caption := 'Pesquisa: Professores';

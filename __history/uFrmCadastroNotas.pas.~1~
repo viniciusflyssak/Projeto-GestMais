@@ -30,16 +30,16 @@ type
     lblNota3: TLabel;
     edtNota4: TEdit;
     lblNota4: TLabel;
-    SpeedButton1: TSpeedButton;
     procedure btnSalvarClick(Sender: TObject);
     procedure btnCancelarClick(Sender: TObject);
     procedure edtCodAlunoExit(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    { Private declarations }
-  public
-    IdProfessor: integer;
-    IdRegistro: integer;
+    FIdProfessor: integer;
+    FIdRegistro: integer;
+  published
+    property IdProfessor: integer read FIdProfessor write FIdProfessor;
+    property IdRegistro: integer read FIdRegistro write FIdRegistro;
   end;
 
 var
@@ -58,11 +58,12 @@ procedure TFrmCadastroNotas.btnSalvarClick(Sender: TObject);
 Const
   cSqlInsertNotas = ' INSERT INTO ALUNOS_PROFESSOR(ANO, ID_ALUNO, ID_PROFESSOR, NOTA1, NOTA2, NOTA3, NOTA4) ' +
                ' VALUES (:pAno, :pIdAluno, :pIdProfessor, :pNota1, :pNota2, :pNota3, :pNota4) ';
-  cSqlUpdateNotas = ' UPDATE ALUNOS_PROFESSOR SET ANO = :pAno, ID_ALUNO = :pIdAluno, ' +
+  cSqlUpdateNotas = ' UPDATE ALUNOS_PROFESSOR SET ANO = :pAno, ID_ALUNO = :pIdAluno, ID_PROFESSOR = :pIdProfessor, ' +
                     ' NOTA1 = :pNota1, NOTA2 = :pNota2, NOTA3 = :pNota3, NOTA4 = :pNota4 ' +
                     ' WHERE ID_ALUNOS_PROFESSOR = :pId';
 var
   qryCadastro: TFDQuery;
+
 begin
   if edtCodAluno.Text = '' then
   begin
@@ -77,17 +78,19 @@ begin
   qryCadastro := TFDQuery.Create(nil);
   try
     qryCadastro.Connection := DM.Connection;
-    if IdRegistro > 0 then
+    if FIdRegistro > 0 then
       qryCadastro.Sql.Add(cSqlUpdateNotas)
     else
       qryCadastro.Sql.Add(cSqlInsertNotas);
     qryCadastro.Params.ParamByName('pAno').Value := StrToInt(edtAno.Text);
     qryCadastro.Params.ParamByName('pIdAluno').Value := StrToInt(edtCodAluno.Text);
-    qryCadastro.Params.ParamByName('pIdProfessor').Value := IdProfessor;
+    qryCadastro.Params.ParamByName('pIdProfessor').Value := FIdProfessor;
     qryCadastro.Params.ParamByName('pNota1').Value := StrToFloatDef(edtNota1.Text, 0);
     qryCadastro.Params.ParamByName('pNota2').Value := StrToFloatDef(edtNota2.Text, 0);
     qryCadastro.Params.ParamByName('pNota3').Value := StrToFloatDef(edtNota3.Text, 0);
     qryCadastro.Params.ParamByName('pNota4').Value := StrToFloatDef(edtNota4.Text, 0);
+    if FIdRegistro > 0 then
+      qryCadastro.Params.ParamByName('pId').Value := FIdRegistro;
     qryCadastro.ExecSQL;
   finally
     FreeAndNil(qryCadastro);
@@ -111,7 +114,7 @@ begin
   try
     qryValidaAluno.Connection := DM.Connection;
     qryValidaAluno.Sql.Add(cSqlAluno);
-    qryValidaAluno.Params.ParamByName('pIdAluno').Value := StrToInt(edtCodAluno.Text);
+    qryValidaAluno.Params.ParamByName('pIdAluno').Value := StrToIntDef(edtCodAluno.Text, 0);
     qryValidaAluno.Open;
     if qryValidaAluno.RecordCount > 0 then
       edtNomeAluno.Text := qryValidaAluno.FieldByName('NOME').AsString
@@ -134,13 +137,13 @@ Const
 var
   qryCarregaRegistro: TFDQuery;
 begin
-  if IdRegistro > 0 then
+  if FIdRegistro > 0 then
   begin
     qryCarregaRegistro := TFDQuery.Create(nil);
     try
       qryCarregaRegistro.Connection := DM.Connection;
       qryCarregaRegistro.Sql.Add(cCarregaDados);
-      qryCarregaRegistro.Params.ParamByName('pID').Value := IdRegistro;
+      qryCarregaRegistro.Params.ParamByName('pID').Value := FIdRegistro;
       qryCarregaRegistro.Open;      
       edtCodAluno.Text := qryCarregaRegistro.FieldByName('ID_ALUNO').AsString;
       edtAno.Text := qryCarregaRegistro.FieldByName('ANO').AsString;

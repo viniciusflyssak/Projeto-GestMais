@@ -30,7 +30,6 @@ type
     lblNota3: TLabel;
     edtNota4: TEdit;
     lblNota4: TLabel;
-    SpeedButton1: TSpeedButton;
     procedure btnSalvarClick(Sender: TObject);
     procedure btnCancelarClick(Sender: TObject);
     procedure edtCodAlunoExit(Sender: TObject);
@@ -64,6 +63,7 @@ Const
                     ' WHERE ID_ALUNOS_PROFESSOR = :pId';
 var
   qryCadastro: TFDQuery;
+
 begin
   if edtCodAluno.Text = '' then
   begin
@@ -114,7 +114,7 @@ begin
   try
     qryValidaAluno.Connection := DM.Connection;
     qryValidaAluno.Sql.Add(cSqlAluno);
-    qryValidaAluno.Params.ParamByName('pIdAluno').Value := StrToInt(edtCodAluno.Text);
+    qryValidaAluno.Params.ParamByName('pIdAluno').Value := StrToIntDef(edtCodAluno.Text, 0);
     qryValidaAluno.Open;
     if qryValidaAluno.RecordCount > 0 then
       edtNomeAluno.Text := qryValidaAluno.FieldByName('NOME').AsString

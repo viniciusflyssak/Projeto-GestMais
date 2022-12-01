@@ -192,13 +192,19 @@ begin
     begin
       pnlTitulo.Caption := 'Cadastro de Professor';
       lblDisciplinaSerie.Caption := 'Disciplina';
+      edtDisciplinaSerie.ShowHint := false;
+      edtDisciplinaSerie.Hint := 'Ex: Matemática';
+      edtDisciplinaSerie.ShowHint := true;
       if FID > 0 then
         BtnCadastroNotas.Visible := true;
     end;
     2:
     begin
       pnlTitulo.Caption := 'Cadastro de Aluno';
-      lblDisciplinaSerie.Caption := 'Serie';
+      lblDisciplinaSerie.Caption := 'Série:';
+      edtDisciplinaSerie.ShowHint := false;
+      edtDisciplinaSerie.Hint := 'Ex: 5*-D';
+      edtDisciplinaSerie.ShowHint := true;
       edtDisciplinaSerie.Left := edtEmail.Left;
       edtDisciplinaSerie.Width := edtEmail.Width;
     end;
